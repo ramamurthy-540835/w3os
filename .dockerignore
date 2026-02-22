@@ -1,0 +1,69 @@
+# Dependencies and build artifacts
+node_modules/
+.npm
+.next/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Version control
+.git/
+.gitignore
+.github/
+
+# Environment files (handled via Cloud Build substitutions)
+.env
+.env.local
+.env.*.local
+
+# Documentation
+README.md
+DEPLOYMENT.md
+ARCHITECTURE.md
+GCP_SETUP.sh
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*.swn
+*.sublime-project
+*.sublime-workspace
+.DS_Store
+
+# Testing
+coverage/
+.nyc_output/
+jest.config.js
+vitest.config.js
+test/
+tests/
+__tests__/
+*.test.ts
+*.test.tsx
+*.spec.ts
+*.spec.tsx
+
+# Development tools
+.eslintignore
+.prettierignore
+.prettierrc
+eslint.config.js
+.husky/
+
+# CI/CD
+.github/
+.gitlab-ci.yml
+.circleci/
+
+# Vercel
+.vercel/
+
+# Build artifacts
+dist/
+build/
+
+# OS files
+.DS_Store
+Thumbs.db

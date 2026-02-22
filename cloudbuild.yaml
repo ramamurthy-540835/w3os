@@ -1,0 +1,54 @@
+# ============================================================
+# W3 Desktop - Cloud Build Pipeline (FIXED)
+# Project: ctoteam | Region: us-central1 | Service: w3
+# ============================================================
+
+steps:
+
+  # 1️⃣ Build & Push Docker Image with Kaniko (cached)
+  - name: 'gcr.io/kaniko-project/executor:latest'
+    id: 'build-push-image'
+    args:
+      - '--destination=${_IMAGE_REPO}/${_SERVICE_NAME}:${_TAG}'
+      - '--destination=${_IMAGE_REPO}/${_SERVICE_NAME}:latest'
+      - '--cache=true'
+      - '--cache-ttl=168h'
+      - '--snapshot-mode=redo'
+      - '--compressed-caching=false'
+
+  # 2️⃣ Deploy to Cloud Run (secrets injected as env vars at runtime)
+  - name: 'gcr.io/cloud-builders/gcloud'
+    id: 'deploy-cloud-run'
+    args:
+      - 'run'
+      - 'deploy'
+      - '${_SERVICE_NAME}'
+      - '--image=${_IMAGE_REPO}/${_SERVICE_NAME}:${_TAG}'
+      - '--platform=managed'
+      - '--region=${_REGION}'
+      - '--allow-unauthenticated'
+      - '--memory=4Gi'
+      - '--cpu=4'
+      - '--max-instances=20'
+      - '--min-instances=0'
+      - '--timeout=300s'
+      - '--concurrency=1'
+      - '--session-affinity'
+      - '--port=8080'
+      - '--set-env-vars=NODE_ENV=production,PLAYWRIGHT_BROWSERS_PATH=/ms-playwright,NEXT_TELEMETRY_DISABLED=1,GCS_BUCKET=w3-os,GCS_PROJECT=ctoteam,AI_MODEL=gemini-2.0-flash,AI_VOICE_ENABLED=true,NEXTAUTH_URL=https://${_SERVICE_NAME}-1035117862188.us-central1.run.app'
+      - '--update-secrets=GEMINI_API_KEY=GEMINI_API_KEY:latest,YOUTUBE_API_KEY=YOUTUBE_API_KEY:latest,SERPAPI_KEY=SERPAPI_KEY:latest,GOOGLE_CLIENT_ID=GOOGLE_CLIENT_ID:latest,GOOGLE_CLIENT_SECRET=GOOGLE_CLIENT_SECRET:latest,GITHUB_CLIENT_ID=GITHUB_CLIENT_ID:latest,GITHUB_CLIENT_SECRET=GITHUB_CLIENT_SECRET:latest,X_CLIENT_ID=X_CLIENT_ID:latest,X_CLIENT_SECRET=X_CLIENT_SECRET:latest,LINKEDIN_CLIENT_ID=LINKEDIN_CLIENT_ID:latest,LINKEDIN_CLIENT_SECRET=LINKEDIN_CLIENT_SECRET:latest,FACEBOOK_CLIENT_ID=FACEBOOK_CLIENT_ID:latest,FACEBOOK_CLIENT_SECRET=FACEBOOK_CLIENT_SECRET:latest'
+    waitFor: ['build-push-image']
+
+substitutions:
+  _SERVICE_NAME: 'w3'
+  _REGION: 'us-central1'
+  _IMAGE_REPO: 'us-docker.pkg.dev/ctoteam/node-apps'
+  _TAG: 'latest'
+
+options:
+  logging: CLOUD_LOGGING_ONLY
+  substitution_option: ALLOW_LOOSE
+
+timeout: '1800s'
+
+images: []
