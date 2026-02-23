@@ -22,8 +22,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Setup Python with essential packages and create .bashrc with aliases
 RUN ln -s /usr/bin/python3 /usr/bin/python && \
     pip3 install --break-system-packages --no-cache-dir \
-    numpy pandas requests flask fastapi httpx uvicorn scikit-learn matplotlib \
-    google-genai google-cloud-bigquery google-cloud-storage db-dtypes pyarrow && \
+    google-genai \
+    numpy pandas matplotlib seaborn plotly \
+    requests flask fastapi httpx uvicorn \
+    google-cloud-bigquery google-cloud-storage \
+    db-dtypes pyarrow openpyxl xlsxwriter \
+    scikit-learn scipy pyspark && \
     printf 'alias python=python3\nalias pip=pip3\nalias ll="ls -la"\nalias la="ls -A"\n' > /tmp/.w3bashrc
 
 # Add gemini command-line tool

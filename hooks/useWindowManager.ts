@@ -8,17 +8,21 @@ export function useWindowManager() {
   const [nextZIndex, setNextZIndex] = useState(1);
 
   const openWindow = useCallback((appType: DesktopWindow['appType'], title: string, state?: Record<string, any>) => {
-    // Default sizes for each window type
+    // Default sizes for each window type (reduced ~25%)
     const defaultSizes: Record<string, { width: number; height: number }> = {
-      terminal: { width: 700, height: 450 },
-      'ai-assistant': { width: 480, height: 580 },
-      'file-explorer': { width: 580, height: 420 },
-      notepad: { width: 600, height: 480 },
-      settings: { width: 500, height: 460 },
-      'agent-store': { width: 720, height: 500 },
-      'oauth-login': { width: 380, height: 500 },
-      browser: { width: 850, height: 600 },
-      'agent-chat': { width: 500, height: 550 },
+      terminal: { width: 550, height: 380 },
+      'ai-assistant': { width: 420, height: 480 },
+      'file-explorer': { width: 480, height: 360 },
+      notepad: { width: 500, height: 400 },
+      settings: { width: 440, height: 400 },
+      'agent-store': { width: 600, height: 420 },
+      'oauth-login': { width: 340, height: 440 },
+      browser: { width: 700, height: 480 },
+      'agent-chat': { width: 450, height: 460 },
+      gmail: { width: 550, height: 450 },
+      drive: { width: 500, height: 400 },
+      'x-app': { width: 450, height: 460 },
+      'linkedin-app': { width: 450, height: 460 },
     };
 
     const size = defaultSizes[appType] || { width: 700, height: 500 };

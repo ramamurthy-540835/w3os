@@ -29,7 +29,7 @@ export interface HistoryPanelProps {
 export interface DesktopWindow {
   id: string;
   title: string;
-  appType: 'browser' | 'notepad' | 'file-explorer' | 'terminal' | 'settings' | 'ai-assistant' | 'oauth-login' | 'agent-store' | 'agent-chat';
+  appType: 'browser' | 'notepad' | 'file-explorer' | 'terminal' | 'settings' | 'ai-assistant' | 'oauth-login' | 'agent-store' | 'agent-chat' | 'gmail' | 'drive' | 'x-app' | 'linkedin-app';
   isMinimized: boolean;
   isMaximized: boolean;
   position: { x: number; y: number };

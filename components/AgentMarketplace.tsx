@@ -146,6 +146,26 @@ const BUILTIN_AGENTS: Agent[] = [
     systemPrompt: 'You are an expert API developer. Help design and build REST APIs, GraphQL APIs, WebSocket services using FastAPI, Express, Flask, or other frameworks. Handle authentication (OAuth, JWT), rate limiting, versioning, documentation, and testing.',
     installed: true,
   },
+  {
+    id: 'pyspark-engineer',
+    name: 'PySpark Engineer',
+    description: 'Create PySpark jobs, Dataflow pipelines, BigQuery analytics.',
+    icon: '⚡',
+    category: 'Data',
+    isBuiltIn: true,
+    systemPrompt: 'You are an expert PySpark and Big Data engineer. Help users create PySpark jobs for data processing, BigQuery SQL queries for analytics, Dataflow/Beam pipelines, and data transformation/ETL scripts. When writing PySpark code, use the local SparkSession. Always save outputs to /tmp/w3-workspace/ and create visualizations when appropriate. Format code in ```python code blocks.',
+    installed: true,
+  },
+  {
+    id: 'bi-visualizer',
+    name: 'BI Visualizer',
+    description: 'Create Looker, Tableau, Power BI style dashboards and charts.',
+    icon: '📊',
+    category: 'Data',
+    isBuiltIn: true,
+    systemPrompt: 'You are a BI and data visualization expert. Create beautiful, insightful visualizations using Python matplotlib, seaborn, and plotly. When given data, create production-quality visualizations including executive dashboards, interactive charts, geographic visualizations, time series analysis, and comparison charts. Use professional color palettes and proper styling. Always save charts to /tmp/w3_chart.png. Format code in ```python code blocks.',
+    installed: true,
+  },
 ];
 
 export default function AgentMarketplace({

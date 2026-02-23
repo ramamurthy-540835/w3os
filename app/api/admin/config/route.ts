@@ -24,11 +24,26 @@ export async function GET() {
         },
       },
       oauth: {
-        google: { configured: !!process.env.GOOGLE_CLIENT_ID },
-        github: { configured: !!process.env.GITHUB_CLIENT_ID },
-        x: { configured: !!process.env.X_CLIENT_ID },
-        linkedin: { configured: !!process.env.LINKEDIN_CLIENT_ID },
-        facebook: { configured: !!process.env.FACEBOOK_CLIENT_ID },
+        google: {
+          configured: !!process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_ID !== 'placeholder',
+          needsSetup: process.env.GOOGLE_CLIENT_ID === 'placeholder',
+        },
+        github: {
+          configured: !!process.env.GITHUB_CLIENT_ID && process.env.GITHUB_CLIENT_ID !== 'placeholder',
+          needsSetup: process.env.GITHUB_CLIENT_ID === 'placeholder',
+        },
+        x: {
+          configured: !!process.env.X_CLIENT_ID && process.env.X_CLIENT_ID !== 'placeholder',
+          needsSetup: process.env.X_CLIENT_ID === 'placeholder',
+        },
+        linkedin: {
+          configured: !!process.env.LINKEDIN_CLIENT_ID && process.env.LINKEDIN_CLIENT_ID !== 'placeholder',
+          needsSetup: process.env.LINKEDIN_CLIENT_ID === 'placeholder',
+        },
+        facebook: {
+          configured: !!process.env.FACEBOOK_CLIENT_ID && process.env.FACEBOOK_CLIENT_ID !== 'placeholder',
+          needsSetup: process.env.FACEBOOK_CLIENT_ID === 'placeholder',
+        },
       },
       system: {
         url: process.env.NEXTAUTH_URL || 'https://w3-1035117862188.us-central1.run.app',
