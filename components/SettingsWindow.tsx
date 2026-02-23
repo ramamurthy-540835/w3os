@@ -609,9 +609,7 @@ export default function SettingsWindow({
                         ) : (
                           <div className="flex items-center gap-2">
                             <span className="text-xs text-zinc-600 dark:text-zinc-400 font-mono flex-1 truncate">
-                              {editingSecret !== clientIdKey
-                                ? process.env[clientIdKey]?.slice(0, 12) + '****' || 'Not set'
-                                : 'Not set'}
+                              {config.preview || 'Not set'}
                             </span>
                             <button
                               onClick={() => {

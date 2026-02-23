@@ -27,22 +27,37 @@ export async function GET() {
         google: {
           configured: !!process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_ID !== 'placeholder',
           needsSetup: process.env.GOOGLE_CLIENT_ID === 'placeholder',
+          preview: process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_ID !== 'placeholder'
+            ? process.env.GOOGLE_CLIENT_ID.slice(0, 12) + '****' + process.env.GOOGLE_CLIENT_ID.slice(-4)
+            : process.env.GOOGLE_CLIENT_ID === 'placeholder' ? '🔴 placeholder' : 'Not set',
         },
         github: {
           configured: !!process.env.GITHUB_CLIENT_ID && process.env.GITHUB_CLIENT_ID !== 'placeholder',
           needsSetup: process.env.GITHUB_CLIENT_ID === 'placeholder',
+          preview: process.env.GITHUB_CLIENT_ID && process.env.GITHUB_CLIENT_ID !== 'placeholder'
+            ? process.env.GITHUB_CLIENT_ID.slice(0, 12) + '****' + process.env.GITHUB_CLIENT_ID.slice(-4)
+            : process.env.GITHUB_CLIENT_ID === 'placeholder' ? '🔴 placeholder' : 'Not set',
         },
         x: {
           configured: !!process.env.X_CLIENT_ID && process.env.X_CLIENT_ID !== 'placeholder',
           needsSetup: process.env.X_CLIENT_ID === 'placeholder',
+          preview: process.env.X_CLIENT_ID && process.env.X_CLIENT_ID !== 'placeholder'
+            ? process.env.X_CLIENT_ID.slice(0, 12) + '****' + process.env.X_CLIENT_ID.slice(-4)
+            : process.env.X_CLIENT_ID === 'placeholder' ? '🔴 placeholder' : 'Not set',
         },
         linkedin: {
           configured: !!process.env.LINKEDIN_CLIENT_ID && process.env.LINKEDIN_CLIENT_ID !== 'placeholder',
           needsSetup: process.env.LINKEDIN_CLIENT_ID === 'placeholder',
+          preview: process.env.LINKEDIN_CLIENT_ID && process.env.LINKEDIN_CLIENT_ID !== 'placeholder'
+            ? process.env.LINKEDIN_CLIENT_ID.slice(0, 12) + '****' + process.env.LINKEDIN_CLIENT_ID.slice(-4)
+            : process.env.LINKEDIN_CLIENT_ID === 'placeholder' ? '🔴 placeholder' : 'Not set',
         },
         facebook: {
           configured: !!process.env.FACEBOOK_CLIENT_ID && process.env.FACEBOOK_CLIENT_ID !== 'placeholder',
           needsSetup: process.env.FACEBOOK_CLIENT_ID === 'placeholder',
+          preview: process.env.FACEBOOK_CLIENT_ID && process.env.FACEBOOK_CLIENT_ID !== 'placeholder'
+            ? process.env.FACEBOOK_CLIENT_ID.slice(0, 12) + '****' + process.env.FACEBOOK_CLIENT_ID.slice(-4)
+            : process.env.FACEBOOK_CLIENT_ID === 'placeholder' ? '🔴 placeholder' : 'Not set',
         },
       },
       system: {
