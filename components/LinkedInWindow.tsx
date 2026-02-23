@@ -24,17 +24,28 @@ export default function LinkedInWindow({
   }, []);
 
   const handleSignIn = () => {
+    console.log('[LinkedInWindow] Sign in button clicked');
     const popup = window.open(
       '/api/auth/linkedin',
       'linkedin-auth',
       'width=500,height=600,left=200,top=100'
     );
 
+    console.log('[LinkedInWindow] Popup opened:', popup);
+
+    if (!popup) {
+      console.error('[LinkedInWindow] Popup blocked! Check browser popup settings');
+      setError('Popup blocked. Please allow popups for this site.');
+      return;
+    }
+
     const listener = (event: MessageEvent) => {
+      console.log('[LinkedInWindow] Received message:', event.data);
       if (
         event.data?.type === 'oauth-success' &&
         event.data?.provider === 'linkedin'
       ) {
+        console.log('[LinkedInWindow] OAuth success! Fetching profile...');
         window.removeEventListener('message', listener);
         // Refresh profile after successful auth
         fetchProfile();

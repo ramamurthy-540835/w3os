@@ -34,17 +34,28 @@ export default function XTwitterWindow({
   }, []);
 
   const handleSignIn = () => {
+    console.log('[XTwitterWindow] Sign in button clicked');
     const popup = window.open(
       '/api/auth/x',
       'x-auth',
       'width=500,height=600,left=200,top=100'
     );
 
+    console.log('[XTwitterWindow] Popup opened:', popup);
+
+    if (!popup) {
+      console.error('[XTwitterWindow] Popup blocked! Check browser popup settings');
+      setError('Popup blocked. Please allow popups for this site.');
+      return;
+    }
+
     const listener = (event: MessageEvent) => {
+      console.log('[XTwitterWindow] Received message:', event.data);
       if (
         event.data?.type === 'oauth-success' &&
         event.data?.provider === 'x'
       ) {
+        console.log('[XTwitterWindow] OAuth success! Fetching timeline...');
         window.removeEventListener('message', listener);
         // Refresh timeline after successful auth
         fetchTimeline();

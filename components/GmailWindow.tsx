@@ -32,17 +32,28 @@ export default function GmailWindow({
   }, []);
 
   const handleSignIn = () => {
+    console.log('[GmailWindow] Sign in button clicked');
     const popup = window.open(
       '/api/auth/google',
       'google-auth',
       'width=500,height=600,left=200,top=100'
     );
 
+    console.log('[GmailWindow] Popup opened:', popup);
+
+    if (!popup) {
+      console.error('[GmailWindow] Popup blocked! Check browser popup settings');
+      setError('Popup blocked. Please allow popups for this site.');
+      return;
+    }
+
     const listener = (event: MessageEvent) => {
+      console.log('[GmailWindow] Received message:', event.data);
       if (
         event.data?.type === 'oauth-success' &&
         event.data?.provider === 'google'
       ) {
+        console.log('[GmailWindow] OAuth success! Fetching emails...');
         window.removeEventListener('message', listener);
         // Refresh emails after successful auth
         fetchEmails();
