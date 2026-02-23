@@ -16,6 +16,10 @@ import AgentMarketplace from './AgentMarketplace';
 import AgentChat from './AgentChat';
 import GlobalVoiceButton from './GlobalVoiceButton';
 import DesktopIcons from './DesktopIcons';
+import GmailWindow from './GmailWindow';
+import DriveWindow from './DriveWindow';
+import XTwitterWindow from './XTwitterWindow';
+import LinkedInWindow from './LinkedInWindow';
 
 export default function Desktop() {
   const [isStartMenuOpen, setIsStartMenuOpen] = useState(false);
@@ -58,22 +62,22 @@ export default function Desktop() {
         openWindow('agent-store', 'AI Agent Store');
         break;
       case 'gmail':
-        openWindow('browser', '📧 Gmail', { url: 'https://mail.google.com' });
+        openWindow('gmail', '📧 Gmail');
         break;
       case 'sheets':
         openWindow('browser', '📊 Google Sheets', { url: 'https://sheets.google.com' });
         break;
       case 'drive':
-        openWindow('browser', '📁 Google Drive', { url: 'https://drive.google.com' });
+        openWindow('drive', '📁 Google Drive');
         break;
       case 'docs':
         openWindow('browser', '📝 Google Docs', { url: 'https://docs.google.com' });
         break;
       case 'x':
-        openWindow('browser', '🐦 X / Twitter', { url: 'https://x.com' });
+        openWindow('x-app', '🐦 X / Twitter');
         break;
       case 'linkedin':
-        openWindow('browser', '💼 LinkedIn', { url: 'https://linkedin.com' });
+        openWindow('linkedin-app', '💼 LinkedIn');
         break;
       case 'facebook':
         openWindow('browser', '📘 Facebook', { url: 'https://facebook.com' });
@@ -117,6 +121,18 @@ export default function Desktop() {
           break;
         case 'agent-chat':
           handleAppLaunch('agent-chat', { agentId: detail.agentId, agentName: detail.title });
+          break;
+        case 'gmail':
+          handleAppLaunch('gmail');
+          break;
+        case 'drive':
+          handleAppLaunch('drive');
+          break;
+        case 'x':
+          handleAppLaunch('x');
+          break;
+        case 'linkedin':
+          handleAppLaunch('linkedin');
           break;
       }
     };
@@ -204,6 +220,34 @@ export default function Desktop() {
             agentName={window.state?.agentName || ''}
             agentIcon={window.state?.agentIcon || '🤖'}
             agentDescription={window.state?.agentDescription || ''}
+            onStateChange={(newState) => updateWindowState(window.id, newState)}
+          />
+        );
+      case 'gmail':
+        return (
+          <GmailWindow
+            windowId={window.id}
+            onStateChange={(newState) => updateWindowState(window.id, newState)}
+          />
+        );
+      case 'drive':
+        return (
+          <DriveWindow
+            windowId={window.id}
+            onStateChange={(newState) => updateWindowState(window.id, newState)}
+          />
+        );
+      case 'x-app':
+        return (
+          <XTwitterWindow
+            windowId={window.id}
+            onStateChange={(newState) => updateWindowState(window.id, newState)}
+          />
+        );
+      case 'linkedin-app':
+        return (
+          <LinkedInWindow
+            windowId={window.id}
             onStateChange={(newState) => updateWindowState(window.id, newState)}
           />
         );
