@@ -58,7 +58,7 @@ export default function XTwitterWindow({
     setError(null);
     setErrorStatus(null);
     try {
-      const response = await fetch('/api/social/x/timeline');
+      const response = await fetch('/api/social/x/timeline', { credentials: 'include' });
       if (!response.ok) {
         setErrorStatus(response.status);
         if (response.status === 401) {
@@ -87,6 +87,7 @@ export default function XTwitterWindow({
       const response = await fetch('/api/social/x/post', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({ text: tweetText }),
       });
 

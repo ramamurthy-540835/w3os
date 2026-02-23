@@ -56,7 +56,7 @@ export default function GmailWindow({
     setError(null);
     setErrorStatus(null);
     try {
-      const response = await fetch('/api/google/gmail');
+      const response = await fetch('/api/google/gmail', { credentials: 'include' });
       if (!response.ok) {
         setErrorStatus(response.status);
         if (response.status === 401) {
@@ -78,7 +78,7 @@ export default function GmailWindow({
 
   const fetchEmailDetail = async (emailId: string) => {
     try {
-      const response = await fetch(`/api/google/gmail/${emailId}`);
+      const response = await fetch(`/api/google/gmail/${emailId}`, { credentials: 'include' });
       if (response.ok) {
         const data = await response.json();
         setFullEmail(data);

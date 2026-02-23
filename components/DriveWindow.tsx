@@ -80,7 +80,8 @@ export default function DriveWindow({
     setErrorStatus(null);
     try {
       const response = await fetch(
-        `/api/google/drive?folderId=${folderId}`
+        `/api/google/drive?folderId=${folderId}`,
+        { credentials: 'include' }
       );
       if (!response.ok) {
         setErrorStatus(response.status);

@@ -48,7 +48,7 @@ export default function LinkedInWindow({
     setError(null);
     setErrorStatus(null);
     try {
-      const response = await fetch('/api/social/linkedin/feed');
+      const response = await fetch('/api/social/linkedin/feed', { credentials: 'include' });
       if (!response.ok) {
         setErrorStatus(response.status);
         if (response.status === 401) {
@@ -76,6 +76,7 @@ export default function LinkedInWindow({
       const response = await fetch('/api/social/linkedin/post', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({ text: postText }),
       });
 
