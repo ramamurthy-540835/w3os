@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
 
     // Clear auth cookies
     const cookieNames = [
-      'w3-auth',
+      'w3-auth-google',
       'w3-auth-github',
       'w3-auth-x',
       'w3-auth-linkedin',
@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
     if (provider) {
       // Clear specific provider
       const providerCookieMap: Record<string, string> = {
-        google: 'w3-auth',
+        google: 'w3-auth-google',
         github: 'w3-auth-github',
         x: 'w3-auth-x',
         linkedin: 'w3-auth-linkedin',

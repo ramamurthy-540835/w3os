@@ -101,7 +101,7 @@ export async function GET(req: NextRequest) {
       },
     });
 
-    response.cookies.set('w3-auth', JSON.stringify(authData), {
+    response.cookies.set('w3-auth-google', JSON.stringify(authData), {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',

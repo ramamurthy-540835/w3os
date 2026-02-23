@@ -4,7 +4,7 @@ import { cookies } from 'next/headers';
 export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const cookieStore = await cookies();
-    const authCookie = cookieStore.get('w3-auth');
+    const authCookie = cookieStore.get('w3-auth-google');
 
     if (!authCookie) {
       return NextResponse.json(
