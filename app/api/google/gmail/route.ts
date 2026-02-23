@@ -4,7 +4,12 @@ import { cookies } from 'next/headers';
 export async function GET(req: NextRequest) {
   try {
     const cookieStore = await cookies();
+
+    console.log('=== GMAIL API CALLED ===');
+    console.log('All cookies available:', Array.from(cookieStore.getAll()).map(c => c.name).join(', '));
+
     const authCookie = cookieStore.get('w3-auth-google');
+    console.log('w3-auth-google cookie found:', !!authCookie);
 
     if (!authCookie) {
       return NextResponse.json(

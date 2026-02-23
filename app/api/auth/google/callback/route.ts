@@ -3,23 +3,37 @@ import { AUTH_CONFIG } from '@/lib/auth-config';
 
 export async function GET(req: NextRequest) {
   try {
+    console.log('=== GOOGLE CALLBACK START ===');
+    console.log('URL:', req.url);
+    console.log('Cookies:', req.cookies.getAll().map(c => c.name).join(', '));
+
     const code = req.nextUrl.searchParams.get('code');
     const state = req.nextUrl.searchParams.get('state');
     const error = req.nextUrl.searchParams.get('error');
 
+    console.log('Code present:', !!code);
+    console.log('Error:', error);
+
     if (error) {
+      console.error('Google OAuth error:', error);
       return NextResponse.redirect(
         new URL(`/?auth_error=${encodeURIComponent(error)}`, AUTH_CONFIG.baseUrl)
       );
     }
 
     if (!code) {
+      console.error('No code provided');
       return NextResponse.redirect(
         new URL('/?auth_error=No+code+provided', AUTH_CONFIG.baseUrl)
       );
     }
 
     const REDIRECT_URI = AUTH_CONFIG.google.redirectUri;
+
+    console.log('Exchanging code for token...');
+    console.log('REDIRECT_URI:', REDIRECT_URI);
+    console.log('Client ID present:', !!process.env.GOOGLE_CLIENT_ID);
+    console.log('Client Secret present:', !!process.env.GOOGLE_CLIENT_SECRET);
 
     const tokenResponse = await fetch('https://oauth2.googleapis.com/token', {
       method: 'POST',
@@ -34,9 +48,15 @@ export async function GET(req: NextRequest) {
     });
 
     const tokenData = await tokenResponse.json();
+    console.log('Token exchange response status:', tokenResponse.status);
+    console.log('Token exchange response:', JSON.stringify(tokenData, null, 2));
 
     if (!tokenResponse.ok) {
-      console.error('Token exchange failed:', tokenData);
+      console.error('Token exchange FAILED:', {
+        status: tokenResponse.status,
+        error: tokenData.error,
+        error_description: tokenData.error_description,
+      });
       return NextResponse.redirect(
         new URL(`/?auth_error=Token+exchange+failed`, AUTH_CONFIG.baseUrl)
       );
