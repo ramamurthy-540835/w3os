@@ -20,9 +20,12 @@ import GmailWindow from './GmailWindow';
 import DriveWindow from './DriveWindow';
 import XTwitterWindow from './XTwitterWindow';
 import LinkedInWindow from './LinkedInWindow';
+import WelcomeDialog from './WelcomeDialog';
 
 export default function Desktop() {
   const [isStartMenuOpen, setIsStartMenuOpen] = useState(false);
+  const [showWelcome, setShowWelcome] = useState(false);
+  const [welcomeChecked, setWelcomeChecked] = useState(false);
   const {
     windows,
     openWindow,
@@ -140,6 +143,40 @@ export default function Desktop() {
     window.addEventListener('w3-open-app', handleOpenApp);
     return () => window.removeEventListener('w3-open-app', handleOpenApp);
   }, [handleAppLaunch]);
+
+  useEffect(() => {
+    // Check if welcome dialog was dismissed before
+    const welcomeDismissed = localStorage.getItem('w3-welcome-dismissed');
+    if (welcomeDismissed) {
+      setWelcomeChecked(true);
+      return;
+    }
+
+    // Check if any providers are connected
+    const checkProviders = async () => {
+      try {
+        const response = await fetch('/api/auth/status');
+        const data = await response.json();
+        const hasConnectedProvider = Object.values(data.providers || {}).some(
+          (p: any) => p.connected
+        );
+
+        if (!hasConnectedProvider) {
+          setShowWelcome(true);
+        }
+      } catch (error) {
+        console.error('Failed to check providers:', error);
+      }
+      setWelcomeChecked(true);
+    };
+
+    checkProviders();
+  }, []);
+
+  const handleWelcomeClose = () => {
+    setShowWelcome(false);
+    localStorage.setItem('w3-welcome-dismissed', 'true');
+  };
 
   const handleWindowClick = useCallback((windowId: string) => {
     focusWindow(windowId);
@@ -328,6 +365,9 @@ export default function Desktop() {
           }
         }}
       />
+
+      {/* Welcome Dialog */}
+      {showWelcome && welcomeChecked && <WelcomeDialog onClose={handleWelcomeClose} />}
     </div>
   );
 }

@@ -33,13 +33,34 @@ export default function SettingsWindow({
     windowSnapToGrid: true,
   });
 
-  const [activeTab, setActiveTab] = useState<'general' | 'appearance' | 'system' | 'integrations'>('general');
+  const [activeTab, setActiveTab] = useState<'general' | 'appearance' | 'system' | 'integrations' | 'admin'>('general');
   const [providers, setProviders] = useState<Provider[]>([]);
   const [loadingProviders, setLoadingProviders] = useState(false);
+  const [adminConfig, setAdminConfig] = useState<any>(null);
+  const [loadingAdmin, setLoadingAdmin] = useState(false);
 
   useEffect(() => {
     loadProviders();
   }, []);
+
+  useEffect(() => {
+    if (activeTab === 'admin') {
+      loadAdminConfig();
+    }
+  }, [activeTab]);
+
+  const loadAdminConfig = async () => {
+    setLoadingAdmin(true);
+    try {
+      const response = await fetch('/api/admin/config');
+      const data = await response.json();
+      setAdminConfig(data);
+    } catch (error) {
+      console.error('Failed to load admin config:', error);
+    } finally {
+      setLoadingAdmin(false);
+    }
+  };
 
   const updateSetting = (key: keyof Settings, value: any) => {
     const newSettings = { ...settings, [key]: value };
@@ -146,7 +167,7 @@ export default function SettingsWindow({
     <div className="flex flex-col h-full bg-white dark:bg-zinc-900">
       {/* Tabs */}
       <div className="flex border-b border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800/50 overflow-auto">
-        {(['general', 'appearance', 'system', 'integrations'] as const).map((tab) => (
+        {(['general', 'appearance', 'system', 'integrations', 'admin'] as const).map((tab) => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
@@ -160,6 +181,7 @@ export default function SettingsWindow({
             {tab === 'appearance' && '🎨 Appearance'}
             {tab === 'system' && '💻 System'}
             {tab === 'integrations' && '🔗 Integrations'}
+            {tab === 'admin' && '🔐 Admin'}
           </button>
         ))}
       </div>
@@ -349,6 +371,123 @@ export default function SettingsWindow({
                 <li>• LinkedIn: Share posts, view profiles</li>
                 <li>• Facebook: Access page feeds</li>
               </ul>
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'admin' && (
+          <div className="p-6 space-y-6">
+            {/* API Keys */}
+            <div>
+              <h3 className="text-lg font-bold text-zinc-900 dark:text-zinc-50 mb-4">
+                🔑 API Keys Configuration
+              </h3>
+              <p className="text-sm text-zinc-600 dark:text-zinc-400 mb-4">
+                API keys are managed via Google Secret Manager. Contact admin to update.
+              </p>
+              {loadingAdmin ? (
+                <div className="text-center py-4 text-zinc-500">Loading...</div>
+              ) : adminConfig?.apis ? (
+                <div className="space-y-3">
+                  {Object.entries(adminConfig.apis).map(([key, config]: [string, any]) => (
+                    <div
+                      key={key}
+                      className="flex items-center justify-between p-4 rounded-lg border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800/50"
+                    >
+                      <div>
+                        <div className="font-medium text-zinc-900 dark:text-zinc-50">
+                          {key === 'gemini' && '🤖 Gemini API Key'}
+                          {key === 'serpapi' && '🔍 SerpAPI Key'}
+                          {key === 'youtube' && '📺 YouTube API Key'}
+                        </div>
+                        {config.preview && (
+                          <div className="text-xs text-zinc-500 font-mono mt-1">
+                            {config.preview}
+                          </div>
+                        )}
+                      </div>
+                      <div className={`px-3 py-1 rounded text-xs font-semibold ${
+                        config.configured
+                          ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300'
+                          : 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300'
+                      }`}>
+                        {config.configured ? '✅ Configured' : '❌ Missing'}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : null}
+            </div>
+
+            {/* System Info */}
+            <div>
+              <h3 className="text-lg font-bold text-zinc-900 dark:text-zinc-50 mb-4">
+                📊 System Information
+              </h3>
+              {adminConfig?.system ? (
+                <div className="space-y-3">
+                  <div className="p-4 rounded-lg border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800/50">
+                    <div className="grid grid-cols-2 gap-4 text-sm">
+                      <div>
+                        <div className="text-xs text-zinc-600 dark:text-zinc-400 font-semibold">Cloud Run URL</div>
+                        <div className="font-mono text-xs text-zinc-900 dark:text-zinc-50 break-all mt-1">
+                          {adminConfig.system.url}
+                        </div>
+                      </div>
+                      <div>
+                        <div className="text-xs text-zinc-600 dark:text-zinc-400 font-semibold">AI Model</div>
+                        <div className="font-mono text-xs text-zinc-900 dark:text-zinc-50 mt-1">
+                          {adminConfig.system.model}
+                        </div>
+                      </div>
+                      <div>
+                        <div className="text-xs text-zinc-600 dark:text-zinc-400 font-semibold">Storage Bucket</div>
+                        <div className="font-mono text-xs text-zinc-900 dark:text-zinc-50 mt-1">
+                          {adminConfig.system.bucket}
+                        </div>
+                      </div>
+                      <div>
+                        <div className="text-xs text-zinc-600 dark:text-zinc-400 font-semibold">Project</div>
+                        <div className="font-mono text-xs text-zinc-900 dark:text-zinc-50 mt-1">
+                          {adminConfig.system.project}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ) : null}
+            </div>
+
+            {/* OAuth Configuration Status */}
+            <div>
+              <h3 className="text-lg font-bold text-zinc-900 dark:text-zinc-50 mb-4">
+                🔐 OAuth Providers Status
+              </h3>
+              {adminConfig?.oauth ? (
+                <div className="space-y-2">
+                  {Object.entries(adminConfig.oauth).map(([key, config]: [string, any]) => (
+                    <div
+                      key={key}
+                      className="flex items-center justify-between p-3 rounded-lg border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800/50 text-sm"
+                    >
+                      <span className="font-medium text-zinc-900 dark:text-zinc-50 capitalize">{key}</span>
+                      <span className={`px-2 py-1 rounded text-xs font-semibold ${
+                        config.configured
+                          ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300'
+                          : 'bg-gray-100 dark:bg-gray-900/30 text-gray-700 dark:text-gray-300'
+                      }`}>
+                        {config.configured ? '✅ Configured' : '⚪ Not Configured'}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              ) : null}
+            </div>
+
+            <div className="p-4 rounded-lg bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800">
+              <p className="text-sm text-blue-900 dark:text-blue-200">
+                <span className="font-semibold">Note:</span> Sensitive configuration like API keys cannot be edited from this interface for security reasons. Update through Google Cloud Console or environment variables.
+              </p>
             </div>
           </div>
         )}

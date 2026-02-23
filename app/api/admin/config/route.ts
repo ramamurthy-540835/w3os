@@ -1,0 +1,47 @@
+import { NextResponse } from 'next/server';
+
+export async function GET() {
+  try {
+    return NextResponse.json({
+      apis: {
+        gemini: {
+          configured: !!process.env.GEMINI_API_KEY,
+          preview: process.env.GEMINI_API_KEY
+            ? process.env.GEMINI_API_KEY.slice(0, 8) + '****' + process.env.GEMINI_API_KEY.slice(-4)
+            : null,
+        },
+        serpapi: {
+          configured: !!process.env.SERPAPI_KEY,
+          preview: process.env.SERPAPI_KEY
+            ? process.env.SERPAPI_KEY.slice(0, 6) + '****' + process.env.SERPAPI_KEY.slice(-3)
+            : null,
+        },
+        youtube: {
+          configured: !!process.env.YOUTUBE_API_KEY,
+          preview: process.env.YOUTUBE_API_KEY
+            ? process.env.YOUTUBE_API_KEY.slice(0, 8) + '****' + process.env.YOUTUBE_API_KEY.slice(-4)
+            : null,
+        },
+      },
+      oauth: {
+        google: { configured: !!process.env.GOOGLE_CLIENT_ID },
+        github: { configured: !!process.env.GITHUB_CLIENT_ID },
+        x: { configured: !!process.env.X_CLIENT_ID },
+        linkedin: { configured: !!process.env.LINKEDIN_CLIENT_ID },
+        facebook: { configured: !!process.env.FACEBOOK_CLIENT_ID },
+      },
+      system: {
+        url: process.env.NEXTAUTH_URL || 'https://w3-1035117862188.us-central1.run.app',
+        model: process.env.AI_MODEL || 'gemini-2.0-flash',
+        bucket: process.env.GCS_BUCKET || 'w3-os',
+        project: process.env.GCS_PROJECT || 'ctoteam',
+        nodeEnv: process.env.NODE_ENV || 'production',
+      },
+    });
+  } catch (error: any) {
+    return NextResponse.json(
+      { error: error.message || 'Failed to fetch config' },
+      { status: 500 }
+    );
+  }
+}
