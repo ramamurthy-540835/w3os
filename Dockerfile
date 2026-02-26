@@ -7,6 +7,7 @@ WORKDIR /app
 ENV NODE_ENV=production
 ENV PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
 ENV NEXT_TELEMETRY_DISABLED=1
+ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
 
 # Install system dependencies (all in one layer to reduce size)
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -16,7 +17,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libasound2 libwayland-client0 fonts-liberation fonts-noto-color-emoji \
     fonts-noto-cjk python3 python3-pip python3-venv git build-essential \
     curl vim-tiny nano wget ca-certificates procps htop net-tools zip unzip \
-    sqlite3 jq tree sed gawk grep && \
+    sqlite3 jq tree sed gawk grep openjdk-17-jre-headless && \
     rm -rf /var/lib/apt/lists/*
 
 # Setup Python with essential packages and create .bashrc with aliases

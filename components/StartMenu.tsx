@@ -44,7 +44,11 @@ export default function StartMenu({ isOpen, onClose, onAppLaunch }: StartMenuPro
       expanded: expandedCategories.has('ai-tools'),
       items: [
         { id: 'ai-assistant', title: 'W3 AI Assistant', icon: '🤖', appType: 'ai-assistant' },
+        { id: 'prompt-craft', title: 'Prompt Craft 2.0', icon: '🎯', appType: 'prompt-craft' },
+        { id: 'model-gallery', title: 'Model Gallery', icon: '🤗', appType: 'model-gallery' },
         { id: 'agent-store', title: 'AI Agent Store', icon: '🧠', appType: 'agent-store' },
+        { id: 'sql-editor', title: 'SQL Editor', icon: '🗄️', appType: 'sql-editor' },
+        { id: 'pyspark', title: 'PySpark Jobs', icon: '⚡', appType: 'pyspark' },
         { id: 'python-coder', title: 'Python Coder', icon: '🐍', appType: 'agent-chat', agentId: 'python-coder' },
         { id: 'doc-writer', title: 'Document Writer', icon: '📝', appType: 'agent-chat', agentId: 'doc-writer' },
         { id: 'web-researcher', title: 'Web Researcher', icon: '🔍', appType: 'agent-chat', agentId: 'web-researcher' },

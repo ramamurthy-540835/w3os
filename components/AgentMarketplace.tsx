@@ -518,13 +518,14 @@ export default function AgentMarketplace({
             </div>
           </div>
         ) : (
-          // Agent Grid - Compact with scrolling
-          <div className="grid gap-3 overflow-y-auto" style={{gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))'}}>
+          // Agent Grid - Responsive with proper fitting
+          <div className="grid gap-4 sm:gap-3" style={{
+            gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 200px), 1fr))'
+          }}>
             {filteredAgents.map(agent => (
               <div
                 key={agent.id}
-                className="bg-white dark:bg-zinc-800 rounded-lg shadow-md hover:shadow-lg transition-shadow overflow-hidden flex flex-col"
-                style={{maxWidth: '200px', maxHeight: '240px'}}
+                className="bg-white dark:bg-zinc-800 rounded-lg shadow-md hover:shadow-lg transition-all duration-200 overflow-hidden flex flex-col h-full"
               >
                 <div className="bg-gradient-to-r from-purple-500 to-blue-500 p-2 flex-shrink-0">
                   <div className="text-2xl mb-1">{agent.icon}</div>

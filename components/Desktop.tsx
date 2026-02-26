@@ -21,6 +21,10 @@ import DriveWindow from './DriveWindow';
 import XTwitterWindow from './XTwitterWindow';
 import LinkedInWindow from './LinkedInWindow';
 import WelcomeDialog from './WelcomeDialog';
+import SQLEditorWindow from './SQLEditorWindow';
+import PySparkWindow from './PySparkWindow';
+import ModelGalleryWindow from './ModelGalleryWindow';
+import PromptCraftWindow from './PromptCraftWindow';
 
 export default function Desktop() {
   const [isStartMenuOpen, setIsStartMenuOpen] = useState(false);
@@ -93,6 +97,18 @@ export default function Desktop() {
           openWindow('agent-chat', options.agentName, options);
         }
         break;
+      case 'sql-editor':
+        openWindow('sql-editor', '🗄️ SQL Editor (BigQuery)');
+        break;
+      case 'pyspark':
+        openWindow('pyspark', '⚡ PySpark Jobs');
+        break;
+      case 'model-gallery':
+        openWindow('model-gallery', '🤗 Model Gallery');
+        break;
+      case 'prompt-craft':
+        openWindow('prompt-craft', '🎯 Prompt Craft 2.0');
+        break;
     }
   }, [openWindow]);
 
@@ -136,6 +152,18 @@ export default function Desktop() {
           break;
         case 'linkedin':
           handleAppLaunch('linkedin');
+          break;
+        case 'sql-editor':
+          handleAppLaunch('sql-editor');
+          break;
+        case 'pyspark':
+          handleAppLaunch('pyspark');
+          break;
+        case 'model-gallery':
+          handleAppLaunch('model-gallery');
+          break;
+        case 'prompt-craft':
+          handleAppLaunch('prompt-craft');
           break;
       }
     };
@@ -284,6 +312,34 @@ export default function Desktop() {
       case 'linkedin-app':
         return (
           <LinkedInWindow
+            windowId={window.id}
+            onStateChange={(newState) => updateWindowState(window.id, newState)}
+          />
+        );
+      case 'sql-editor':
+        return (
+          <SQLEditorWindow
+            windowId={window.id}
+            onStateChange={(newState) => updateWindowState(window.id, newState)}
+          />
+        );
+      case 'pyspark':
+        return (
+          <PySparkWindow
+            windowId={window.id}
+            onStateChange={(newState) => updateWindowState(window.id, newState)}
+          />
+        );
+      case 'model-gallery':
+        return (
+          <ModelGalleryWindow
+            windowId={window.id}
+            onStateChange={(newState) => updateWindowState(window.id, newState)}
+          />
+        );
+      case 'prompt-craft':
+        return (
+          <PromptCraftWindow
             windowId={window.id}
             onStateChange={(newState) => updateWindowState(window.id, newState)}
           />

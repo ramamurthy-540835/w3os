@@ -84,6 +84,13 @@ interface AIAssistantWindowProps {
   onStateChange: (state: Record<string, any>) => void;
 }
 
+const MODELS = [
+  { id: 'gemini-2.0-flash', label: 'Gemini 2.0 Flash', badge: 'Fast' },
+  { id: 'gemini-2.0-flash-lite', label: 'Gemini 2.0 Flash Lite', badge: 'Lite' },
+  { id: 'gemini-1.5-pro', label: 'Gemini 1.5 Pro', badge: 'Pro' },
+  { id: 'gemini-2.5-flash-preview-04-17', label: 'Gemini 2.5 Flash', badge: 'New' },
+];
+
 export default function AIAssistantWindow({
   windowId,
   onStateChange,
@@ -103,8 +110,70 @@ export default function AIAssistantWindow({
   const [voiceInputUsed, setVoiceInputUsed] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [voiceError, setVoiceError] = useState('');
+  const [selectedModel, setSelectedModel] = useState('gemini-2.0-flash');
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+
+  // Load model from localStorage on mount
+  useEffect(() => {
+    const saved = localStorage.getItem('w3-ai-model');
+    if (saved) {
+      // Accept both Gemini and HF models
+      if (saved.startsWith('hf:') || MODELS.some(m => m.id === saved)) {
+        setSelectedModel(saved);
+      }
+    }
+  }, []);
+
+  // Save model to localStorage when changed
+  useEffect(() => {
+    localStorage.setItem('w3-ai-model', selectedModel);
+  }, [selectedModel]);
+
+  // Listen for model changes from Model Gallery
+  useEffect(() => {
+    const handleModelChanged = (event: Event) => {
+      const customEvent = event as CustomEvent;
+      const newModel = customEvent.detail?.model;
+      if (newModel) {
+        setSelectedModel(newModel);
+      }
+    };
+
+    window.addEventListener('w3-model-changed', handleModelChanged);
+    return () => {
+      window.removeEventListener('w3-model-changed', handleModelChanged);
+    };
+  }, []);
+
+  // Listen for prompt ready event from Prompt Craft
+  useEffect(() => {
+    const handlePromptReady = (event: Event) => {
+      const customEvent = event as CustomEvent;
+      const prompt = customEvent.detail?.prompt;
+      const model = customEvent.detail?.model;
+
+      if (prompt) {
+        // Load the optimized prompt into the input
+        setInput(prompt);
+
+        // Set the recommended model if provided
+        if (model) {
+          setSelectedModel(model);
+        }
+
+        // Auto-focus the input
+        setTimeout(() => {
+          inputRef.current?.focus();
+        }, 100);
+      }
+    };
+
+    window.addEventListener('w3-prompt-ready', handlePromptReady);
+    return () => {
+      window.removeEventListener('w3-prompt-ready', handlePromptReady);
+    };
+  }, []);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -137,6 +206,7 @@ export default function AIAssistantWindow({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           message: messageText,
+          model: selectedModel,
           history: messages.map((m) => ({
             role: m.role,
             content: m.content,
@@ -249,7 +319,25 @@ export default function AIAssistantWindow({
           <span className="text-3xl">🤖</span>
           <div>
             <h2 className="text-white font-bold">W3 AI Assistant</h2>
-            <p className="text-blue-100 text-xs">Powered by Google Gemini</p>
+            <p className="text-blue-100 text-xs">
+              Model:
+              <select
+                value={selectedModel}
+                onChange={(e) => setSelectedModel(e.target.value)}
+                className="ml-2 px-2 py-0.5 rounded bg-blue-700 hover:bg-blue-800 text-white text-xs font-semibold border border-blue-500 cursor-pointer"
+              >
+                {MODELS.map(model => (
+                  <option key={model.id} value={model.id}>
+                    {model.label} ({model.badge})
+                  </option>
+                ))}
+                {selectedModel.startsWith('hf:') && (
+                  <option value={selectedModel}>
+                    HF: {selectedModel.slice(3).split('/').pop()} (Active)
+                  </option>
+                )}
+              </select>
+            </p>
           </div>
         </div>
         <div className="flex gap-2">

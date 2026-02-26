@@ -1,11 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
-const GEMINI_MODEL = 'gemini-2.0-flash';
-const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${GEMINI_API_KEY}`;
+const HF_TOKEN = process.env.HF_TOKEN;
+const DEFAULT_MODEL = 'gemini-2.0-flash';
+
+// Map of supported models
+const SUPPORTED_MODELS: Record<string, string> = {
+  'gemini-2.0-flash': 'gemini-2.0-flash',
+  'gemini-2.0-flash-lite': 'gemini-2.0-flash-lite',
+  'gemini-1.5-pro': 'gemini-1.5-pro',
+  'gemini-2.5-flash-preview-04-17': 'gemini-2.5-flash-preview-04-17',
+};
 
 // System prompt for W3 AI Assistant
-function getSystemPrompt(): string {
+function getSystemPrompt(model: string): string {
   return `You are W3 AI, an intelligent assistant running inside the W3 Cloud OS - a real cloud-based operating system built on Google Cloud.
 
 ## Your Capabilities
@@ -32,7 +40,7 @@ function getSystemPrompt(): string {
 - Always be respectful of user privacy and security
 
 ## Current Environment
-- Model: ${GEMINI_MODEL}
+- Model: ${model}
 - Cloud Project: ctoteam
 - Storage Bucket: w3-os
 - Region: us-central1`;
@@ -53,7 +61,7 @@ export async function POST(request: NextRequest) {
     console.log('✓ GEMINI_API_KEY is configured');
 
     const body = await request.json();
-    const { message, history = [] } = body;
+    const { message, history = [], model: requestModel } = body;
 
     // Validate request
     if (!message || typeof message !== 'string') {
@@ -62,6 +70,65 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
+
+    // Check if requesting HuggingFace model
+    if (requestModel?.startsWith('hf:')) {
+      if (!HF_TOKEN) {
+        return NextResponse.json(
+          { error: 'HuggingFace token not configured' },
+          { status: 503 }
+        );
+      }
+
+      const hfModelId = requestModel.slice(3);
+      const hfUrl = `https://api-inference.huggingface.co/models/${hfModelId}`;
+
+      try {
+        const hfResponse = await fetch(hfUrl, {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${HF_TOKEN}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            inputs: message,
+            parameters: {
+              max_length: 500,
+            },
+          }),
+        });
+
+        if (!hfResponse.ok) {
+          const errorData = await hfResponse.json();
+          console.error('HF API error:', errorData);
+          return NextResponse.json(
+            { error: errorData.error || 'HuggingFace API error' },
+            { status: hfResponse.status }
+          );
+        }
+
+        const hfData = await hfResponse.json();
+        const reply = Array.isArray(hfData)
+          ? hfData[0]?.generated_text || 'No response generated'
+          : hfData.generated_text || JSON.stringify(hfData);
+
+        return NextResponse.json({
+          reply,
+          model: requestModel,
+          usage: {},
+        });
+      } catch (error: any) {
+        console.error('HuggingFace request error:', error);
+        return NextResponse.json(
+          { error: error.message || 'Failed to call HuggingFace API' },
+          { status: 500 }
+        );
+      }
+    }
+
+    // Determine model to use (Gemini)
+    const model = (requestModel && SUPPORTED_MODELS[requestModel]) || DEFAULT_MODEL;
+    const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${GEMINI_API_KEY}`;
 
     // Build conversation history for Gemini
     // Convert message history format to Gemini format
@@ -74,12 +141,12 @@ export async function POST(request: NextRequest) {
     ];
 
     // Call Gemini API
-    const response = await fetch(GEMINI_URL, {
+    const response = await fetch(geminiUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         system_instruction: {
-          parts: [{ text: getSystemPrompt() }]
+          parts: [{ text: getSystemPrompt(model) }]
         },
         contents,
         generationConfig: {
@@ -127,7 +194,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       reply,
-      model: GEMINI_MODEL,
+      model,
       usage: data.usageMetadata || {},
     });
   } catch (error: any) {
@@ -145,8 +212,10 @@ export async function POST(request: NextRequest) {
 export async function GET() {
   return NextResponse.json({
     status: 'ready',
-    model: GEMINI_MODEL,
+    model: DEFAULT_MODEL,
+    supportedModels: Object.keys(SUPPORTED_MODELS),
     hasApiKey: !!GEMINI_API_KEY,
+    hasHfToken: !!HF_TOKEN,
     features: ['text', 'voice', 'code-execution', 'file-access', 'web-search'],
     environment: process.env.NODE_ENV || 'development',
   });

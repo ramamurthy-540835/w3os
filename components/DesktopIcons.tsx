@@ -10,6 +10,10 @@ export default function DesktopIcons({ onOpenApp }: DesktopIconsProps) {
     { title: 'File Explorer', icon: '📁', appType: 'file-explorer' },
     { title: 'Notepad', icon: '📝', appType: 'notepad' },
     { title: 'AI Assistant', icon: '🤖', appType: 'ai-assistant' },
+    { title: 'Prompt Craft', icon: '🎯', appType: 'prompt-craft' },
+    { title: 'Model Gallery', icon: '🤗', appType: 'model-gallery' },
+    { title: 'SQL Editor', icon: '🗄️', appType: 'sql-editor' },
+    { title: 'PySpark', icon: '⚡', appType: 'pyspark' },
     { title: 'Web Browser', icon: '🌐', appType: 'browser' },
     { title: 'AI Agents', icon: '🧠', appType: 'agent-store' },
   ];
