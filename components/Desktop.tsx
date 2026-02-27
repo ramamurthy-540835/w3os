@@ -338,12 +338,7 @@ export default function Desktop() {
           />
         );
       case 'prompt-craft':
-        return (
-          <PromptCraftWindow
-            windowId={window.id}
-            onStateChange={(newState) => updateWindowState(window.id, newState)}
-          />
-        );
+        return <PromptCraftWindow />;
       default:
         return <div className="p-6">Unknown app type</div>;
     }
