@@ -100,7 +100,7 @@ export default function ModelGalleryWindow({
     try {
       const params = new URLSearchParams({
         action: 'list',
-        task: selectedTask,
+        pipeline_tag: selectedTask,
         sort: sortBy,
         direction: '-1', // descending
         limit: '100',

@@ -8,18 +8,17 @@ export async function GET(request: NextRequest) {
 
   try {
     if (action === 'list') {
-      const task = searchParams.get('task') || 'text-generation';
+      const pipelineTag = searchParams.get('pipeline_tag') || searchParams.get('task') || 'text-generation';
       const sort = searchParams.get('sort') || 'downloads';
       const direction = searchParams.get('direction') || '-1'; // -1 = desc, 1 = asc
       const limit = searchParams.get('limit') || '50';
 
-      // Build URL with proper query params
+      // Build URL with proper query params for HF API
       const params = new URLSearchParams({
-        task: task,
-        sort: sort,
-        direction: direction === '-1' ? 'desc' : 'asc',
-        limit: limit,
-        full: 'true', // Get full model info
+        'pipeline_tag': pipelineTag,
+        'sort': sort === 'likes' ? 'likes' : sort === 'modified' ? 'lastModified' : 'downloads',
+        'direction': direction === '-1' ? '-1' : '1',
+        'limit': limit,
       });
 
       const hfUrl = `https://huggingface.co/api/models?${params.toString()}`;
