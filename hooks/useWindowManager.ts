@@ -19,7 +19,7 @@ export function useWindowManager() {
       'sql-editor': { width: 1000, height: 640 },
       'pyspark': { width: 900, height: 600 },
       'model-gallery': { width: 1000, height: 660 },
-      'prompt-craft': { width: 950, height: 680 },
+      'prompt-craft': { width: 800, height: 600 },
       'oauth-login': { width: 340, height: 440 },
       browser: { width: 700, height: 480 },
       'agent-chat': { width: 450, height: 460 },

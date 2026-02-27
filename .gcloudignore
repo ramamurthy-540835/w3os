@@ -67,3 +67,20 @@ build/
 
 # OS files
 Thumbs.db
+
+# Python caches (PySpark, BigQuery)
+__pycache__/
+.pytest_cache/
+*.pyc
+
+# Build and tool caches
+.turbo/
+.cache/
+.eslintcache
+
+# Temporary files
+tmp/
+.tmp/
+
+# Log files
+*.log
