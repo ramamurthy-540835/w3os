@@ -39,6 +39,15 @@ const HF_TASKS = [
   'fill-mask',
   'image-generation',
   'text-classification',
+  'text-to-image',
+  'image-to-text',
+  'object-detection',
+];
+
+const SORT_OPTIONS = [
+  { label: 'Most Downloads', value: 'downloads' },
+  { label: 'Most Likes', value: 'likes' },
+  { label: 'Recently Updated', value: 'modified' },
 ];
 
 export default function ModelGalleryWindow({
@@ -55,6 +64,7 @@ export default function ModelGalleryWindow({
   const [favorites, setFavorites] = useState<Set<string>>(new Set());
   const [selectedModel, setSelectedModel] = useState('');
   const [hasHfToken, setHasHfToken] = useState(false);
+  const [modelCount, setModelCount] = useState(0);
 
   // Load selected model and favorites from localStorage
   useEffect(() => {
@@ -77,30 +87,39 @@ export default function ModelGalleryWindow({
       .catch(() => setHasHfToken(false));
   }, []);
 
-  // Load HF models when task changes
+  // Load HF models when task or sort changes
   useEffect(() => {
     if (activeTab === 'huggingface') {
       loadHuggingFaceModels();
     }
-  }, [selectedTask, activeTab]);
+  }, [selectedTask, sortBy, activeTab]);
 
   const loadHuggingFaceModels = async () => {
     setHfLoading(true);
     setHfError('');
     try {
-      const response = await fetch(
-        `/api/huggingface?action=list&task=${selectedTask}&sort=${sortBy}&limit=50`
-      );
+      const params = new URLSearchParams({
+        action: 'list',
+        task: selectedTask,
+        sort: sortBy,
+        direction: '-1', // descending
+        limit: '100',
+      });
+
+      const response = await fetch(`/api/huggingface?${params.toString()}`);
       const data = await response.json();
       if (data.error) {
         setHfError(data.error);
         setHfModels([]);
+        setModelCount(0);
       } else {
         setHfModels(data.models || []);
+        setModelCount(data.count || (data.models || []).length);
       }
     } catch (error: any) {
       setHfError(error.message || 'Failed to load HuggingFace models');
       setHfModels([]);
+      setModelCount(0);
     } finally {
       setHfLoading(false);
     }
@@ -178,34 +197,61 @@ export default function ModelGalleryWindow({
       )}
 
       {/* Filters */}
-      <div className="border-b border-zinc-300 dark:border-zinc-600 bg-zinc-50 dark:bg-zinc-800 p-4 flex gap-3 flex-wrap items-center">
-        <select
-          value={selectedTask}
-          onChange={(e) => setSelectedTask(e.target.value)}
-          className="px-3 py-2 rounded border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-700 text-sm"
-        >
-          {HF_TASKS.map((task) => (
-            <option key={task} value={task}>
-              {task}
-            </option>
-          ))}
-        </select>
+      <div className="border-b border-zinc-300 dark:border-zinc-600 bg-zinc-50 dark:bg-zinc-800 p-4 space-y-3">
+        <div className="flex gap-3 flex-wrap items-center">
+          <select
+            value={selectedTask}
+            onChange={(e) => setSelectedTask(e.target.value)}
+            className="px-3 py-2 rounded border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-700 text-sm font-medium"
+            title="Filter by task type"
+          >
+            {HF_TASKS.map((task) => (
+              <option key={task} value={task}>
+                {task.replace('-', ' ').replace(/^\w/, (c) => c.toUpperCase())}
+              </option>
+            ))}
+          </select>
 
-        <input
-          type="text"
-          placeholder="Search models..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="px-3 py-2 rounded border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-700 text-sm flex-1 min-w-48"
-        />
+          <select
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value)}
+            className="px-3 py-2 rounded border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-700 text-sm font-medium"
+            title="Sort by"
+          >
+            {SORT_OPTIONS.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
 
-        <button
-          onClick={loadHuggingFaceModels}
-          disabled={hfLoading}
-          className="px-3 py-2 rounded bg-blue-500 hover:bg-blue-600 text-white text-sm font-semibold disabled:opacity-50"
-        >
-          {hfLoading ? '⏳ Loading...' : '🔄 Refresh'}
-        </button>
+          <input
+            type="text"
+            placeholder="Search models or authors..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="px-3 py-2 rounded border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-700 text-sm flex-1 min-w-48"
+          />
+
+          <button
+            onClick={loadHuggingFaceModels}
+            disabled={hfLoading}
+            className="px-3 py-2 rounded bg-blue-500 hover:bg-blue-600 disabled:bg-zinc-400 text-white text-sm font-semibold transition-colors"
+            title="Refresh model list"
+          >
+            {hfLoading ? '⏳' : '🔄'}
+          </button>
+        </div>
+
+        {/* Stats */}
+        <div className="text-xs text-zinc-600 dark:text-zinc-400">
+          Showing <span className="font-semibold">{hfModels.filter((m) =>
+            searchQuery
+              ? m.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                m.author.toLowerCase().includes(searchQuery.toLowerCase())
+              : true
+          ).length}</span> of <span className="font-semibold">{modelCount}</span> models
+        </div>
       </div>
 
       {/* Models Grid */}
@@ -238,7 +284,7 @@ export default function ModelGalleryWindow({
           </div>
         )}
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
           {hfModels
             .filter((m) =>
               searchQuery
@@ -250,60 +296,79 @@ export default function ModelGalleryWindow({
               const hfModelId = `hf:${model.id}`;
               const isFavorite = favorites.has(hfModelId);
               const isActive = selectedModel === hfModelId;
+              const downloadStr = model.downloads >= 1000000
+                ? `${(model.downloads / 1000000).toFixed(1)}M`
+                : model.downloads >= 1000
+                ? `${(model.downloads / 1000).toFixed(0)}k`
+                : String(model.downloads);
 
               return (
                 <div
                   key={model.id}
-                  className="border border-zinc-300 dark:border-zinc-600 rounded p-3 hover:shadow-md transition-shadow"
+                  className={`border rounded-lg p-3.5 transition-all ${
+                    isActive
+                      ? 'border-blue-500 dark:border-blue-400 bg-blue-50 dark:bg-blue-900/20 shadow-md'
+                      : 'border-zinc-300 dark:border-zinc-600 hover:shadow-lg hover:border-zinc-400 dark:hover:border-zinc-500'
+                  }`}
                 >
-                  <div className="flex items-start justify-between mb-2">
+                  {/* Header with title and favorite button */}
+                  <div className="flex items-start justify-between mb-2.5">
                     <div className="flex-1 min-w-0">
-                      <h4 className="font-semibold text-sm text-zinc-900 dark:text-white truncate">
+                      <h4 className="font-semibold text-sm text-zinc-900 dark:text-white truncate leading-tight">
                         {model.name}
                       </h4>
-                      <p className="text-xs text-zinc-600 dark:text-zinc-400 truncate">
-                        by {model.author}
+                      <p className="text-xs text-zinc-500 dark:text-zinc-400 truncate mt-0.5">
+                        @{model.author}
                       </p>
                     </div>
                     <button
                       onClick={() => toggleFavorite(hfModelId)}
-                      className="ml-2 text-lg transition-colors"
+                      className="ml-2 text-xl transition-transform hover:scale-110 flex-shrink-0"
                       title={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
                     >
                       {isFavorite ? '⭐' : '☆'}
                     </button>
                   </div>
 
-                  <div className="flex gap-1 flex-wrap mb-2">
-                    <span className="inline-block px-2 py-0.5 text-xs rounded bg-purple-100 dark:bg-purple-900 text-purple-700 dark:text-purple-300">
-                      {model.task}
+                  {/* Task badge */}
+                  <div className="mb-2.5">
+                    <span className="inline-block px-2.5 py-1 text-xs font-medium rounded-full bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300">
+                      {model.task.replace('-', ' ')}
                     </span>
                   </div>
 
-                  <div className="flex items-center gap-3 text-xs text-zinc-600 dark:text-zinc-400 mb-3">
-                    <span>📥 {(model.downloads / 1000).toFixed(0)}k</span>
-                    <span>❤️ {model.likes}</span>
+                  {/* Stats grid */}
+                  <div className="grid grid-cols-2 gap-2 mb-3 text-xs text-zinc-600 dark:text-zinc-400">
+                    <div className="bg-zinc-100 dark:bg-zinc-800/50 rounded px-2.5 py-1.5">
+                      <div className="text-zinc-500 dark:text-zinc-500">Downloads</div>
+                      <div className="font-semibold text-zinc-900 dark:text-white">📥 {downloadStr}</div>
+                    </div>
+                    <div className="bg-zinc-100 dark:bg-zinc-800/50 rounded px-2.5 py-1.5">
+                      <div className="text-zinc-500 dark:text-zinc-500">Likes</div>
+                      <div className="font-semibold text-zinc-900 dark:text-white">❤️ {model.likes}</div>
+                    </div>
                   </div>
 
+                  {/* Action buttons */}
                   <div className="flex gap-2">
                     <button
                       onClick={() => useModel(hfModelId)}
-                      className={`flex-1 py-1.5 px-2 rounded text-xs font-semibold transition-colors ${
+                      className={`flex-1 py-2 px-2.5 rounded-lg text-xs font-semibold transition-colors ${
                         isActive
                           ? 'bg-blue-600 text-white'
                           : 'bg-blue-500 hover:bg-blue-600 text-white'
                       }`}
                     >
-                      {isActive ? '✓ Active' : 'Use'}
+                      {isActive ? '✓ Active' : 'Use Model'}
                     </button>
                     <a
                       href={`https://huggingface.co/${model.id}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="py-1.5 px-2 rounded text-xs font-semibold bg-zinc-200 dark:bg-zinc-700 hover:bg-zinc-300 dark:hover:bg-zinc-600 transition-colors"
+                      className="py-2 px-3 rounded-lg text-xs font-semibold bg-zinc-200 dark:bg-zinc-700 hover:bg-zinc-300 dark:hover:bg-zinc-600 transition-colors text-zinc-700 dark:text-zinc-200"
                       title="Open on HuggingFace"
                     >
-                      ↗
+                      View on HF ↗
                     </a>
                   </div>
                 </div>

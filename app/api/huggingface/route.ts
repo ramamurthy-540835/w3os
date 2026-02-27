@@ -10,9 +10,19 @@ export async function GET(request: NextRequest) {
     if (action === 'list') {
       const task = searchParams.get('task') || 'text-generation';
       const sort = searchParams.get('sort') || 'downloads';
+      const direction = searchParams.get('direction') || '-1'; // -1 = desc, 1 = asc
       const limit = searchParams.get('limit') || '50';
 
-      const hfUrl = `https://huggingface.co/api/models?filter=${encodeURIComponent(task)}&sort=${sort}&limit=${limit}`;
+      // Build URL with proper query params
+      const params = new URLSearchParams({
+        task: task,
+        sort: sort,
+        direction: direction === '-1' ? 'desc' : 'asc',
+        limit: limit,
+        full: 'true', // Get full model info
+      });
+
+      const hfUrl = `https://huggingface.co/api/models?${params.toString()}`;
 
       const response = await fetch(hfUrl, {
         headers: HF_TOKEN ? { Authorization: `Bearer ${HF_TOKEN}` } : {},
@@ -28,7 +38,7 @@ export async function GET(request: NextRequest) {
 
       const data = await response.json();
 
-      // Shape the response
+      // Shape the response with enhanced metadata
       const models = Array.isArray(data)
         ? data.map((model: any) => ({
             id: model.id,
@@ -38,10 +48,14 @@ export async function GET(request: NextRequest) {
             downloads: model.downloads || 0,
             likes: model.likes || 0,
             tags: model.tags || [],
+            description: model.description || '',
+            private: model.private || false,
+            modelId: model.id,
+            lastModified: model.lastModified,
           }))
         : [];
 
-      return NextResponse.json({ models });
+      return NextResponse.json({ models, count: models.length });
     }
 
     if (action === 'model') {
