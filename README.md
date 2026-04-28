@@ -1,40 +1,40 @@
 # W3Os
 
 ## Overview
-- W3Os is a comprehensive framework designed to simplify decentralized application (dApp) development.
-- It provides an operating system-like abstraction for interacting with Web3 ecosystems.
-- The framework offers a suite of tools and standardized components for building robust dApps.
-- It aims to reduce complexity and accelerate development cycles for blockchain-based solutions.
+- Comprehensive framework designed to simplify decentralized application (dApp) development.
+- Provides an operating system-like abstraction for interacting with Web3 ecosystems.
+- Offers a suite of tools and standardized components for building robust dApps.
+- Aims to reduce complexity and accelerate development cycles for blockchain solutions.
 
 ## Business Problem
-- Developing dApps is complex due to fragmented protocols, varying blockchain interfaces, and security concerns.
-- Lack of a unified framework leads to increased development time and inconsistent user experiences.
-- Interoperability between different blockchain networks and services remains a significant challenge.
-- High barrier to entry for developers new to the Web3 space, hindering innovation.
+- dApp development is complex due to fragmented protocols and varying blockchain interfaces.
+- Lack of a unified framework increases development time and leads to inconsistent user experiences.
+- Interoperability between different blockchain networks and services presents a significant challenge.
+- High barrier to entry for developers new to Web3, hindering innovation and adoption.
 
 ## Key Capabilities
-- **Decentralized Identity Management**: Secure user authentication and authorization across dApps.
-- **Smart Contract Abstraction Layer**: Simplified interaction with various smart contracts.
-- **Cross-Chain Communication Toolkit**: Facilitates seamless data and value transfer between blockchains.
-- **Decentralized Storage Integration**: Tools for interacting with IPFS, Arweave, and similar systems.
-- **Real-time Blockchain Event Subscriptions**: Efficient monitoring and reaction to on-chain events.
-- **Developer CLI & SDK**: Command-line interface and software development kit for rapid prototyping.
-- **Wallet Integration Services**: Support for various Web3 wallets and authentication methods.
-- **Modular Component Library**: Reusable UI and logic components for common dApp functionalities.
+- Decentralized Identity Management for secure user authentication.
+- Simplified Smart Contract Abstraction Layer for diverse contracts.
+- Cross-Chain Communication Toolkit facilitating seamless data and value transfer.
+- Integration with decentralized storage systems like IPFS and Arweave.
+- Real-time Blockchain Event Subscriptions for efficient monitoring.
+- Comprehensive Developer CLI and SDK for rapid prototyping.
+- Support for various Web3 wallet integration services.
+- Modular Component Library for reusable dApp functionalities.
 
 ## Tech Stack
-- Cloud: Cloud-agnostic deployment patterns for infrastructure components.
-- Backend: TypeScript, Node.js, GraphQL (for indexing/gateway services).
-- Frontend: TypeScript, React.
-- Data: IPFS, Arweave (for decentralized content storage), PostgreSQL (for off-chain indexing/metadata).
-- AI/ML: N/A (Future integration points for decentralized AI networks).
+- Cloud: Cloud-agnostic deployment patterns
+- Backend: TypeScript, Node.js, GraphQL
+- Frontend: TypeScript, React
+- Data: IPFS, Arweave, PostgreSQL
+- AI/ML: N/A
 
 ## Architecture Flow
 1. User interacts with a dApp frontend built using W3Os components.
 2. Frontend calls W3Os SDK methods to perform Web3 operations.
 3. W3Os SDK handles authentication, wallet interactions, and request signing.
 4. SDK routes requests to appropriate smart contracts on the blockchain or decentralized storage.
-5. Blockchain network executes contract logic and updates state, or decentralized storage returns data.
+5. Blockchain network executes contract logic, or decentralized storage returns data.
 6. W3Os SDK receives transaction confirmations or data.
 7. SDK processes responses and propagates results back to the frontend.
 
@@ -68,47 +68,48 @@
 1. Ensure all tests pass: `npm test`
 2. Build the production-ready distribution: `npm run build`
 3. Publish to NPM (for library distribution): `npm publish`
-4. For dApps using W3Os, deploy smart contracts to chosen blockchain networks.
+4. Deploy smart contracts to chosen blockchain networks.
 5. Deploy frontend application to a static hosting service or IPFS.
 ## Architecture
 
-A modular platform enabling interaction with and development of Web3 applications and services..
+W3Os: Decentralized Application (dApp) Development Framework with Web3 OS Abstraction.
 
 ```mermaid
 %%{init: {'flowchart': {'nodeSpacing': 50, 'rankSpacing': 70}}}%%
 flowchart LR
   subgraph UI_Layer ["UI Layer"]
-    A["W3Os User Interface
-(Web Application for User Interaction)"]
+    A["dApp User Interface
+(React Web Client)"]
   end
   subgraph API_Layer ["API Layer"]
-    B["W3Os Backend API
-(Handles Requests, Authentication, Authorization)"]
+    B["W3Os Application Server
+(Node.js/TypeScript API)"]
   end
   subgraph Processing_Layer ["Processing Layer"]
-    C["W3Os Core Services
-(Business Logic & Orchestrates Platform Operations)"]
-    D["W3Os Blockchain Gateway
-(Facilitates Smart Contract & Network Interaction)"]
+    C["W3Os Core Framework
+(Web3 OS Abstraction & Logic)"]
+  end
+  subgraph AI_Layer ["AI Layer"]
+    F["AI Assistant Service
+(Intelligent Development/Runtime Features)"]
   end
   subgraph Data_Storage_Layer ["Data/Storage Layer"]
-    E["Application Data Storage
-(Stores User Profiles, Session Data, App Configuration)"]
-    F["External Blockchain Network
-(Public/Private Decentralized Ledger)"]
+    D["Decentralized Networks
+(Blockchain & Web3 Protocols)"]
+    E["Persistent App Data Store
+(Framework & dApp Backend Data)"]
   end
   A --> B
   B --> C
-  B --> E
   C --> D
-  C --> E
-  D --> F
+  B --> E
+  B --> F
 ```
 
 For a standalone preview, see [docs/architecture.html](docs/architecture.html).
 
 ### Key Architectural Aspects:
-* A client-side web application provides the primary user interface for the W3Os platform.
-* A robust backend API handles all incoming user requests, manages authentication, and authorizes access to core services.
-* Centralized core services orchestrate complex business logic and manage interactions with both traditional databases and blockchain components.
-* A dedicated blockchain gateway ensures secure and efficient communication with external decentralized networks and smart contracts.
+* W3Os provides a comprehensive framework to simplify decentralized application (dApp) development by abstracting Web3 complexities.
+* It features a React-based user interface interacting with a Node.js/TypeScript application server that leverages a core 'Web3 OS' framework.
+* The core framework orchestrates interactions with various blockchain networks and other decentralized Web3 protocols.
+* An integrated AI Assistant service potentially aids in dApp development, provides intelligent features, or offers runtime assistance.
