@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>w3os - Architecture Diagram</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js"></script>
+    <style>
+        body { font-family: sans-serif; margin: 20px; }
+        .mermaid { width: 100%; height: auto; }
+    </style>
+</head>
+<body>
+    <h1>w3os Architecture Diagram</h1>
+    <div class="mermaid">
+flowchart TD
+  A["Client Request: User's browser initiates a request to the W3Os web application."]
+  B["Next.js Server Processing: The request is handled by the Next.js application, running as a Node.js process within a Docker container on GCP."]
+  C["API/Backend Logic: Next.js processes API routes or delegates to a custom 'server.js' for business logic, data access, and external integrations."]
+  D["React Component Rendering: React components are server-side rendered (SSR) or prepared for client-side rendering to generate UI output."]
+  E["Response Generation & Delivery: The Next.js server compiles and sends the final response (HTML, JSON, assets) back to the client."]
+  F["Client-Side Hydration & Interaction: The browser receives the response, hydrates the React application, enabling dynamic UI and client-side routing."]
+  A --> B
+  B --> C
+  C --> D
+  D --> E
+  E --> F
+    </div>
+    <script>
+        mermaid.initialize({ startOnLoad: true });
+    </script>
+</body>
+</html>
