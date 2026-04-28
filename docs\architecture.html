@@ -14,31 +14,32 @@
 %%{init: {'flowchart': {'nodeSpacing': 50, 'rankSpacing': 70}}}%%
 flowchart LR
   subgraph UI_Layer ["UI Layer"]
-    A["W3Os User Interface
-(Web Application for User Interaction)"]
+    A["dApp User Interface
+(React Web Client)"]
   end
   subgraph API_Layer ["API Layer"]
-    B["W3Os Backend API
-(Handles Requests, Authentication, Authorization)"]
+    B["W3Os Application Server
+(Node.js/TypeScript API)"]
   end
   subgraph Processing_Layer ["Processing Layer"]
-    C["W3Os Core Services
-(Business Logic & Orchestrates Platform Operations)"]
-    D["W3Os Blockchain Gateway
-(Facilitates Smart Contract & Network Interaction)"]
+    C["W3Os Core Framework
+(Web3 OS Abstraction & Logic)"]
+  end
+  subgraph AI_Layer ["AI Layer"]
+    F["AI Assistant Service
+(Intelligent Development/Runtime Features)"]
   end
   subgraph Data_Storage_Layer ["Data/Storage Layer"]
-    E["Application Data Storage
-(Stores User Profiles, Session Data, App Configuration)"]
-    F["External Blockchain Network
-(Public/Private Decentralized Ledger)"]
+    D["Decentralized Networks
+(Blockchain & Web3 Protocols)"]
+    E["Persistent App Data Store
+(Framework & dApp Backend Data)"]
   end
   A --> B
   B --> C
-  B --> E
   C --> D
-  C --> E
-  D --> F
+  B --> E
+  B --> F
     </div>
     <script>
         mermaid.initialize({ startOnLoad: true });
